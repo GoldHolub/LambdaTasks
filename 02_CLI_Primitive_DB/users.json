@@ -1,0 +1,37 @@
+[
+  {
+    "userName": "Max",
+    "gender": "Male",
+    "age": 25
+  },
+  {
+    "userName": "poly",
+    "gender": "Female",
+    "age": 24
+  },
+  {
+    "userName": "frank",
+    "gender": "Male",
+    "age": 50
+  },
+  {
+    "userName": "piter",
+    "gender": "Male",
+    "age": 12
+  },
+  {
+    "userName": "Maximus",
+    "gender": "Male",
+    "age": 34
+  },
+  {
+    "userName": "Fan",
+    "gender": "Male",
+    "age": 54
+  },
+  {
+    "userName": "Alice",
+    "gender": "Female",
+    "age": 28
+  }
+]
