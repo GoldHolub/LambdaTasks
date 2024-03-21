@@ -2,8 +2,8 @@ import {program} from "commander";
 import fs from "fs";
 import TelegramBot from "node-telegram-bot-api";
 
-const botToken = '7195997049:AAFOSjt0npnMGvbpQEyWdT9M4KFWDQ9bPR8';
-const chatId = '354682671';
+const botToken = 'your bot token';
+const chatId = 'your chat id';
 const bot = new TelegramBot(botToken);
 
 program.command('message <text>')

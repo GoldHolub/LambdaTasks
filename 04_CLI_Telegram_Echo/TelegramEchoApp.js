@@ -1,7 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import axios from "axios";
 
-const botToken = '7195997049:AAFOSjt0npnMGvbpQEyWdT9M4KFWDQ9bPR8';
+const botToken = 'your bot token';
 const bot = new TelegramBot(botToken, { polling: true });
 bot.on("message", async (msg) => {
     const chatId = msg.chat.id;
