@@ -80,7 +80,8 @@ async function startApp() {
         ]);
 
         const matchingUsers = findUsersByName(searchQuery);
-        console.log("Matching users:", matchingUsers);
+        matchingUsers.length == 0 ? console.log(`User ${searchQuery} not found`) 
+                                  : console.log("Matching users:", matchingUsers);
     }
 }
 
