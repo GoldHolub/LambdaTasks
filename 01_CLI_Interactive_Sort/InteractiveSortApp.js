@@ -4,7 +4,7 @@ const readline = require('readline').createInterface({
 });
 
 function startApp() {
-    readline.question('put some words separated by spaces: ', inputString => {
+    readline.question('Put some words/characters/digits separated by spaces: ', inputString => {
         const {words, numbers} = processInputByGroups(inputString);
         processOperationByOptions(words, numbers, inputString);
     });
@@ -49,11 +49,12 @@ function displayOption() {
                 + "\n3. Show digits by DCSC."
                 + "\n4. Sort words by quantity of letters."
                 + "\n5. Show unique words."
-                + "\n6. Show only the unique values(words + numbers + symbols)");0
+                + "\n6. Show only the unique values(words + numbers + symbols)"
+                + "\nTo close program type: exit\n");
 }
 
 function processInputByGroups(input) {
-    const inputValues = input.split(" ");
+    const inputValues = input.split(" ").filter(value => value.trim() !== "");
     const words = inputValues.filter(inputValues => isNaN(inputValues));
     const numbers = inputValues.filter(inputValues => !isNaN(inputValues)).map(Number);
     return {words, numbers};
