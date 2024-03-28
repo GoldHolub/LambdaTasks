@@ -1,13 +1,13 @@
 import TelegramBot from "node-telegram-bot-api";
 import axios from "axios";
 
-const botToken = 'your bot token';
+const botToken = '7195997049:AAFOSjt0npnMGvbpQEyWdT9M4KFWDQ9bPR8';
 const bot = new TelegramBot(botToken, { polling: true });
 bot.on("message", async (msg) => {
     const chatId = msg.chat.id;
     const textMessage = msg.text ? msg.text.toLowerCase() : '';
     const firstName = msg.from.first_name;
-    const lastName = msg.from.last_name;
+    const lastName = msg.from.last_name ?? '';
 
     if (textMessage === "photo") {
         try {
@@ -26,4 +26,4 @@ bot.on("message", async (msg) => {
             console.log(`User ${firstName} ${lastName} sent photo`);
         }
     }
-});
+}); 
