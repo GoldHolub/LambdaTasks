@@ -3,8 +3,8 @@ import axios from "axios";
 
 const botToken = '7065852807:AAEAkmKGWuNgOgX_ETINEKeoPghHlklG8-Q';
 const openWeatherApiKey = '9ae66d1ecb032e8c3a8928a2b6ded72c';
-const city = 'Dnipro'; 
 const bot = new TelegramBot(botToken, { polling: true });
+let city = 'Dnipro'; 
 
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
@@ -89,5 +89,15 @@ bot.onText(/Wind/, async (msg) => {
         bot.sendMessage(chatId, windInfo);
     } catch (error) {
         bot.sendMessage(chatId, 'Failed to fetch wind information. Please try again later.');
+    }
+});
+
+bot.onText(/city:/, async (msg) => {
+    const indexOfCity = 1;
+    const splitedText = msg.text.split(':');
+    if (splitedText.length === 2) {
+        const chatId = msg.chat.id;
+        city = splitedText[indexOfCity].trim(); 
+        bot.sendMessage(chatId, `Selected city: ${city}`);
     }
 });
