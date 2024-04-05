@@ -1,0 +1,19 @@
+{
+  "name": "correctarium-test-project",
+  "version": "1.0.0",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.4",
+    "@babel/preset-env": "^7.24.4",
+    "babel-jest": "^27.5.1",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
+  },
+  "scripts": {
+    "start": "node src/CorrectariumApp.js",
+    "test": "jest"
+  },
+  "type": "module"
+}
