@@ -5,5 +5,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.5.0"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^20.12.5"
+  }
 }
