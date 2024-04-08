@@ -1,4 +1,5 @@
 import connectToDatabase from "../db.js";
+import {ObjectId} from 'mongodb';
 
 const userRepository = {
     async createUser(user) {
@@ -24,7 +25,7 @@ const userRepository = {
     async getUserById(userId) {
         try {
             const db = await connectToDatabase();
-            const objectId = new objectId(userId);
+            const objectId = new ObjectId(userId);
             return db.collection('users').findOne({ _id: objectId });
         } catch (error) {
             console.error('Error getting user by ID:', error);
@@ -38,26 +39,6 @@ const userRepository = {
             return db.collection('users').findOne({ email });
         } catch (error) {
             console.error('Error getting user by email:', error);
-            throw error;
-        }
-    },
-
-    async updateUser(userId, updatedUserData) {
-        try {
-            const db = await connectToDatabase();
-            return db.collection('users').updateOne({ _id: userId }, { $set: updatedUserData });
-        } catch (error) {
-            console.error('Error updating user:', error);
-            throw error;
-        }
-    },
-
-    async deleteUser(userId) {
-        try {
-            const db = await connectToDatabase();
-            return db.collection('users').deleteOne({ _id: userId });
-        } catch (error) {
-            console.error('Error deleting user:', error);
             throw error;
         }
     },

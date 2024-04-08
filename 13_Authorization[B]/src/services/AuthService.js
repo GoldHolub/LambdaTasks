@@ -39,7 +39,7 @@ const authService = {
     async refreshAccessToken(refreshToken) {
         try {
             const decoded = jwt.verify(refreshToken, JWT_SECRET);
-            const user = await userRepository.getUserById(decoded.userId);
+            const user = await userRepository.getUserByEmail(decoded.email);
             if (!user) {
                 throw new Error('User not found');
             }
