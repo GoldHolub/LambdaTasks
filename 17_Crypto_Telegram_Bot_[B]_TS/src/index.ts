@@ -17,9 +17,9 @@ const listOfCommands: string[] = [];
 listOfCommands.push('/start');
 listOfCommands.push('/help');
 listOfCommands.push('/listRecent');
-listOfCommands.push('/addToFavourite');
-listOfCommands.push('/listFavourite');
-listOfCommands.push('/deleteFavourite');
+listOfCommands.push('/addToFavorite');
+listOfCommands.push('/listFavorite');
+listOfCommands.push('/deleteFavorite');
 
 bot.onText(/\/start/, (msg) => {
     bot.sendMessage(msg.chat.id, 'Welcome to the CryptoBot! Use /help to see available commands.');
@@ -28,9 +28,9 @@ bot.onText(/\/start/, (msg) => {
 bot.onText(/\/help/, (msg) => {
     const helpMessage = `Available commands:
         /listRecent - List recent cryptocurrencies
-        /addToFavourite {symbol} - Add a cryptocurrency to favorites
-        /listFavourite - List favorite cryptocurrencies
-        /deleteFavourite {symbol} - Remove from favorites`;
+        /addToFavorite {symbol} - Add a cryptocurrency to favorites
+        /listFavorite - List favorite cryptocurrencies
+        /deleteFavorite {symbol} - Remove from favorites`;
     bot.sendMessage(msg.chat.id, helpMessage);
 });
 
@@ -50,24 +50,24 @@ bot.onText(/\/listRecent/, async (msg) => {
     }
 });
 
-bot.onText(/\/addToFavourite (.+)/, async (msg, match) => {
+bot.onText(/\/addToFavorite (.+)/, async (msg, match) => {
     MySqliteDb.createFavoritesTable();
     const username: string | undefined = msg.from?.username;
     const symbol: string | undefined = match?.[1]?.toUpperCase();
     const chatId: number = msg.chat.id;
-    addToFavourite(username, symbol, chatId);
+    addToFavorite(username, symbol, chatId);
 });
 
-bot.onText(/\/listFavourite/, async (msg) => {
+bot.onText(/\/listFavorite/, async (msg) => {
     const username: string | undefined = msg.from?.username;
-    let listFavourite: string = 'Favorites:\n';
+    let listFavorite: string = 'Favorites:\n';
     try {
         db.all(' SELECT favorite_cryptos FROM favorites WHERE username = ?',
             [username], (err, rows: { symbol: string }[]) => {
                 rows.forEach(async (row: any) => {
-                    listFavourite += "/" + row.favorite_cryptos + '\n';
+                    listFavorite += "/" + row.favorite_cryptos + '\n';
                 });
-                bot.sendMessage(msg.chat.id, listFavourite);
+                bot.sendMessage(msg.chat.id, listFavorite);
             });
     } catch (error) {
         console.error('Error fetching favorites:', error);
@@ -76,11 +76,11 @@ bot.onText(/\/listFavourite/, async (msg) => {
 
 });
 
-bot.onText(/\/deleteFavourite (.+)/, async (msg, match) => {
+bot.onText(/\/deleteFavorite (.+)/, async (msg, match) => {
     const username: string | undefined = msg.from?.username;
     const symbol: string | undefined = match?.[1]?.toUpperCase();
     const chatId: number = msg.chat.id;
-    deleteFromFavourite(username, symbol, chatId);
+    deleteFromFavorite(username, symbol, chatId);
 });
 
 bot.onText(/\/(\w+)/, async (msg, match) => {
@@ -131,14 +131,14 @@ bot.on('callback_query', async (query) => {
         const username: string | undefined = query.from.username;
         const symbol: string = data.substring(4);
         const chatId: number = query.message?.chat.id as number;
-        addToFavourite(username, symbol, chatId);
+        addToFavorite(username, symbol, chatId);
         return;
     }
     if (data?.startsWith('remove_')) {
         ; const username: string | undefined = query.from.username;
         const symbol: string = data.substring(7);
         const chatId: number = query.message?.chat.id as number;
-        deleteFromFavourite(username, symbol, chatId);
+        deleteFromFavorite(username, symbol, chatId);
         return;
     } else {
         getHistoricalCryptoData(data, query);
@@ -150,7 +150,7 @@ app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
 
-const addToFavourite = async (username: string | undefined, symbol: string | undefined, chatId: number) => {
+const addToFavorite = async (username: string | undefined, symbol: string | undefined, chatId: number) => {
 
     if (!username) {
         console.log('undefined username');
@@ -175,13 +175,13 @@ const addToFavourite = async (username: string | undefined, symbol: string | und
                 }
             });
     } catch (error) {
-        bot.sendMessage(chatId, `Can't add ${symbol} to favourites`);
+        bot.sendMessage(chatId, `Can't add ${symbol} to favorites`);
     }
 
 }
 
 
-const deleteFromFavourite = async (username: string | undefined, symbol: string | undefined, chatId: number) => {
+const deleteFromFavorite = async (username: string | undefined, symbol: string | undefined, chatId: number) => {
 
     if (!username) {
         console.log('undefined username');
@@ -196,9 +196,9 @@ const deleteFromFavourite = async (username: string | undefined, symbol: string 
     }
     try {
         await cryptoRepository.deleteFromFavorites(username, symbol);
-        bot.sendMessage(chatId, `cryptocurrency ${symbol} successfully deleted from favourites`);
+        bot.sendMessage(chatId, `cryptocurrency ${symbol} successfully deleted from favorites`);
     } catch (error) {
-        bot.sendMessage(chatId, `can't delete ${symbol} from favourites`);
+        bot.sendMessage(chatId, `can't delete ${symbol} from favorites`);
     }
 }
 
