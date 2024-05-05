@@ -1,7 +1,7 @@
 import fs from 'fs';
 
-const FILE_PATH = '09_Vacation_grouping/original-vacation-info.json';
-const NEW_FILE_PATH = '09_Vacation_grouping/new-vacation-info.json';
+const FILE_PATH = 'original-vacation-info.json';
+const NEW_FILE_PATH = 'new-vacation-info.json';
 
 const readFile = (filePath) => {
     const vacationFile = fs.readFileSync(filePath);

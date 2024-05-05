@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const FOLDER_PATH = '08_Instagram_Giveaway/files';
+const FOLDER_PATH = 'files';
 const AMOUNT_OF_FILES = 10;
 let amountOfAllFiles;
 
@@ -59,6 +59,6 @@ const totalUniqueUsernames = findTotalAmountOfUniqueNames(usernamesMap);
 const usernamesInAllFiles = amountOFUsernamesInAllFiles(usernamesMap, amountOfAllFiles);
 const usernamesInAtLeast10Files = amountOFUsernamesInMoreThanTenFiles(usernamesMap, AMOUNT_OF_FILES);
 
-console.log("Total unique usernames:", totalUniqueUsernames);
-console.log("Usernames appearing in all files:", usernamesInAllFiles);
-console.log("Usernames appearing in at least 10 files:", usernamesInAtLeast10Files);
+console.log("Total unique usernames:", totalUniqueUsernames); // Unique phrases: 129240
+console.log("Usernames appearing in all files:", usernamesInAllFiles); // Phrases present in all 20 files: 441
+console.log("Usernames appearing in at least 10 files:", usernamesInAtLeast10Files); //Phrases present in at least ten files: 73245
