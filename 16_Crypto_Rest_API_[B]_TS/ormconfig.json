@@ -1,0 +1,16 @@
+{
+    "type": "mysql",
+    "driver": {},
+    "host": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "787898max!",
+    "database": "coinmarket_data",
+    "synchronize": true,
+    "entities": [
+        "src/entities/*.ts"
+    ],
+    "cli": {
+        "entitiesDir": "src/entities"
+    }
+}    
