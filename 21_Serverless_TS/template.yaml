@@ -11,12 +11,12 @@ Resources:
     Type: AWS::Serverless::Function 
     Properties:
       CodeUri: hello-world/
-      Handler: helloFunction.lambdaHandler
+      Handler: HelloFunction.lambdaHandler
       Runtime: nodejs20.x
       Architectures:
       - x86_64
       Events:
-        HelloWorld:
+        Hello:
           Type: Api 
           Properties:
             Path: /hello
@@ -34,12 +34,12 @@ Resources:
     Type: AWS::Serverless::Function 
     Properties:
       CodeUri: hello-world/
-      Handler: HelloFunction.lambdaHandler
+      Handler: FibonacciFunction.lambdaHandler
       Runtime: nodejs20.x
       Architectures:
       - x86_64
       Events:
-        HelloWorld:
+        FIBONACCI:
           Type: Api 
           Properties:
             Path: /fibonacci
@@ -70,12 +70,12 @@ Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
+  HelloApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
+  HelloFunction:
     Description: Hello World Lambda Function ARN
     Value: !GetAtt HelloFunction.Arn
-  HelloWorldFunctionIamRole:
+  HelloFunctionIamRole:
     Description: Implicit IAM Role created for Hello function
     Value: !GetAtt HelloFunctionRole.Arn
