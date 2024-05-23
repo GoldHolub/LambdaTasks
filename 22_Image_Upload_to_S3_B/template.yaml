@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Timeout: 30
+
+Resources:
+  AddImage:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: src/functions
+      Handler: AddImage.generateUploadUrl
+      Runtime: nodejs20.x
+      Environment: 
+        Variables: 
+          BUCKET_NAME: image-upload-bucket-22
+          TABLE_NAME: image-storage
+          REGION: eu-north-1
+      Architectures:
+      - x86_64
+    Metadata: 
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+        - AddImage.ts
+
+  GetListOfImages:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: src/functions
+      Handler: GetListOfImages.listUserImages
+      Runtime: nodejs20.x
+      Environment: 
+        Variables: 
+          BUCKET_NAME: image-upload-bucket-22
+          TABLE_NAME: image-storage
+          REGION: eu-north-1
+      Architectures:
+      - x86_64
+    Metadata: 
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+        - GetListOfImages.ts   
+
+  DeleteImage:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: src/functions
+      Handler: DeleteImage.deleteImage
+      Runtime: nodejs20.x
+      Environment: 
+        Variables: 
+          BUCKET_NAME: image-upload-bucket-22
+          TABLE_NAME: image-storage
+          REGION: eu-north-1
+      Architectures:
+      - x86_64
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+        -  DeleteImage.ts           
