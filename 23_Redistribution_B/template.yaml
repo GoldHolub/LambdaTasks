@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Timeout: 30
+
+Resources:
+  SQSMessagesHandler:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: src
+      Handler: SQSMessagesHandler.handler
+      Runtime: nodejs20.x
+      Architectures:
+      - x86_64
+    Metadata: 
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+        - SQSMessagesHandler.ts 
+
+  DbInfoChecker:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: src
+      Handler: DbInfoChecker.handler
+      Runtime: nodejs20.x
+      Architectures:
+      - x86_64
+    Metadata: 
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+        - DbInfoChecker.ts             

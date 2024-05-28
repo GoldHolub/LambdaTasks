@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.138",
+    "@types/node": "^20.12.12",
+    "aws-sdk": "^2.1627.0",
+    "k6": "^0.0.0",
+    "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.6"
+  }
+}
