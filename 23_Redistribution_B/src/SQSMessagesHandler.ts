@@ -32,6 +32,14 @@ export const handler: SQSHandler = async (event: SQSEvent): Promise<any> => {
         continue;
       }
 
+      const result = await client.query('SELECT usage_count FROM shop_usage WHERE shop_id = $1', [shop_id]);
+      const usageCount = result.rows[0].usage_count;
+      if (usageCount >= 10000) {
+        const responseMessage: string = `Usage limit reached for shop: ${shop_id}`;
+        console.log(responseMessage);
+        return { statusCode: 200, body: responseMessage };
+      }
+
       await client.query(
         'INSERT INTO users (name, password, search_phrase, shop_id) VALUES ($1, $2, $3, $4)',
         [name, password, search_phrase, shop_id]
@@ -45,13 +53,6 @@ export const handler: SQSHandler = async (event: SQSEvent): Promise<any> => {
         [shop_id]
       );
       console.log('successfully inserted data into DB: name-' + name);
-
-      const result = await client.query('SELECT usage_count FROM shop_usage WHERE shop_id = $1', [shop_id]);
-      const usageCount = result.rows[0].usage_count;
-
-      if (usageCount >= 10000) {
-        console.log(`Usage limit reached for shop: ${shop_id}`);
-      }
     }
     console.log('Messages processed successfully');
     return { statusCode: 200, body: 'Messages processed successfully' };
