@@ -1,6 +1,5 @@
-import { SQSHandler, SQSEvent, SQSRecord } from 'aws-lambda';
+import { APIGatewayProxyHandler } from 'aws-lambda';
 import { Client } from 'pg';
-import AWS from 'aws-sdk';
 
 const validShops = ['shop1', 'shop2', 'shop3', 'shop4', 'shop5'];
 
@@ -19,41 +18,40 @@ const setupScript = `
   );
 `;
 
-export const handler: SQSHandler = async (event: SQSEvent): Promise<any> => {
+export const handler: APIGatewayProxyHandler = async (event) => {
   const client = createDbClient();
   try {
     await provideDbConnectionAndSetup(client);
-    for (const record of event.Records) {
-      const messageBody = JSON.parse(record.body);
-      const { name, password, search_phrase, shop_id } = messageBody;
 
-      if (!validShops.includes(shop_id)) {
-        console.log('Invalid shop ID:', shop_id);
-        continue;
-      }
+    const { name, password, search_phrase, shop_id } = JSON.parse(event.body || '{}');
 
-      const result = await client.query('SELECT usage_count FROM shop_usage WHERE shop_id = $1', [shop_id]);
-      const usageCount = result.rows[0].usage_count;
-      if (usageCount >= 10000) {
-        const responseMessage: string = `Usage limit reached for shop: ${shop_id}`;
-        console.log(responseMessage);
-        return { statusCode: 200, body: responseMessage };
-      }
+    if (!validShops.includes(shop_id)) {
+      console.log('Invalid shop ID:', shop_id);
+      return { statusCode: 400, body: `'Invalid shop ID:' ${shop_id}` };
+    }
 
-      await client.query(
-        'INSERT INTO users (name, password, search_phrase, shop_id) VALUES ($1, $2, $3, $4)',
-        [name, password, search_phrase, shop_id]
-      );
+    const result = await client.query('SELECT usage_count FROM shop_usage WHERE shop_id = $1', [shop_id]);
+    const usageCount = result.rows[0].usage_count;
+    if (usageCount >= 12000) {
+      const responseMessage: string = `Usage limit reached for shop: ${shop_id}`;
+      console.log(responseMessage);
+      return { statusCode: 200, body: responseMessage };
+    }
 
-      await client.query(
-        `INSERT INTO shop_usage (shop_id, usage_count) 
+    await client.query(
+      'INSERT INTO users (name, password, search_phrase, shop_id) VALUES ($1, $2, $3, $4)',
+      [name, password, search_phrase, shop_id]
+    );
+
+    await client.query(
+      `INSERT INTO shop_usage (shop_id, usage_count) 
          VALUES ($1, 1) 
          ON CONFLICT (shop_id) DO 
          UPDATE SET usage_count = shop_usage.usage_count + 1`,
-        [shop_id]
-      );
-      console.log('successfully inserted data into DB: name-' + name);
-    }
+      [shop_id]
+    );
+    console.log('successfully inserted data into DB: name-' + name);
+
     console.log('Messages processed successfully');
     return { statusCode: 200, body: 'Messages processed successfully' };
   } catch (error) {
@@ -66,13 +64,13 @@ export const handler: SQSHandler = async (event: SQSEvent): Promise<any> => {
 
 const createDbClient = () => {
   return new Client({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      ssl: {
-          rejectUnauthorized: false,
-      },
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   });
 };
 

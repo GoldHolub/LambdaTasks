@@ -3,7 +3,7 @@ import { check, sleep } from 'k6';
 import { randomItem, randomString } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
 
 export let options = {
-  vus: 2000, 
+  vus: 1000, 
   duration: '5s', 
 };
 
@@ -35,6 +35,7 @@ export default function () {
   check(res, {
     'is status 200': (r) => r.status === 200,
     'is status 400': (r) => r.status === 400,
+    'is status 500': (r) => r.status === 500,
   });
   sleep(1); // Adjust sleep time based on desired request rate
 }

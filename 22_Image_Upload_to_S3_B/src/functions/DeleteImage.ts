@@ -9,43 +9,43 @@ export const deleteImage: APIGatewayProxyHandler = async (event) => {
         const dynamodb = new DynamoDB.DocumentClient({ region: process.env.REGION! });
         const s3 = new S3Client({ region: process.env.REGION! });
         const userId = event.requestContext.authorizer?.claims.sub;
-        const { imageId } = JSON.parse(event.body!);
+        const { imageIds } = JSON.parse(event.body!);
 
-        if (!imageId) {
+        if (!imageIds || !Array.isArray(imageIds)) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ message: 'Provide image id in JSON body' }),
+                body: JSON.stringify({ message: 'Provide an array of image ids in JSON body' }),
             };
         }
 
-        const dynamodbParams = {
-            TableName: tableName,
-            Key: { imageId },
-        };
-
-        const result = await dynamodb.get(dynamodbParams).promise();
-        console.log('the result is: ' + result);
-        const image = result.Item;
-        console.log('the image item is: ' + image?.imageId);
-
-        if (!image || image.userId !== userId) {
-            return {
-                statusCode: 404,
-                body: JSON.stringify({ message: 'Image not found or unauthorized' }),
+        for (const imageId of imageIds) {
+            const dynamodbParams = {
+                TableName: tableName,
+                Key: { imageId },
             };
-        }
 
-        const deleteObjectParams = {
-            Bucket: bucketName,
-            Key: image.imageId,
-        };
-        const deleteCommand = new DeleteObjectCommand(deleteObjectParams);
-        await s3.send(deleteCommand);
-        await dynamodb.delete(dynamodbParams).promise();
+            const result = await dynamodb.get(dynamodbParams).promise();
+            const image = result.Item;
+
+            if (!image || image.userId !== userId) {
+                return {
+                    statusCode: 404,
+                    body: JSON.stringify({ message: `Image with id ${imageId} not found or unauthorized` }),
+                };
+            }
+
+            const deleteObjectParams = {
+                Bucket: bucketName,
+                Key: image.imageId,
+            };
+            const deleteCommand = new DeleteObjectCommand(deleteObjectParams);
+            await s3.send(deleteCommand);
+            await dynamodb.delete(dynamodbParams).promise();
+        }
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ message: 'Image deleted successfully' }),
+            body: JSON.stringify({ message: 'Images deleted successfully' }),
         };
     } catch (error) {
         console.error('Error deleting image:', error);

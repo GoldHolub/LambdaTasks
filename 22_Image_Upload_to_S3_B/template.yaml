@@ -70,4 +70,26 @@ Resources:
         Target: es2022
         Sourcemap: false
         EntryPoints:
-        -  DeleteImage.ts           
+        -  DeleteImage.ts 
+
+  SighInUser:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: src/functions
+      Handler: SighInUser.sighIn
+      Runtime: nodejs20.x
+      Environment: 
+        Variables: 
+          BUCKET_NAME: image-upload-bucket-22
+          TABLE_NAME: image-storage
+          REGION: eu-north-1
+      Architectures:
+      - x86_64
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+        -  SighInUser.ts                 
