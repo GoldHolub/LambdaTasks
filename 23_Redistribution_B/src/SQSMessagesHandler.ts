@@ -1,28 +1,16 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
+import { SQS } from '@aws-sdk/client-sqs';
 import { Client } from 'pg';
 
 const validShops = ['shop1', 'shop2', 'shop3', 'shop4', 'shop5'];
-
-const setupScript = `
-  CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    search_phrase TEXT,
-    shop_id VARCHAR(255) NOT NULL
-  );
-  
-  CREATE TABLE IF NOT EXISTS shop_usage (
-    shop_id VARCHAR(255) PRIMARY KEY,
-    usage_count INTEGER DEFAULT 0
-  );
-`;
+const queueUrl: string = process.env.SQS_QUEUE_URL!;
+const sqs = new SQS({ apiVersion: '2012-11-05' });
+const API_CALLS_LIMIT = 12000;
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   const client = createDbClient();
   try {
-    await provideDbConnectionAndSetup(client);
-
+    await client.connect();
     const { name, password, search_phrase, shop_id } = JSON.parse(event.body || '{}');
 
     if (!validShops.includes(shop_id)) {
@@ -31,32 +19,29 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     }
 
     const result = await client.query('SELECT usage_count FROM shop_usage WHERE shop_id = $1', [shop_id]);
-    const usageCount = result.rows[0].usage_count;
-    if (usageCount >= 12000) {
-      const responseMessage: string = `Usage limit reached for shop: ${shop_id}`;
+    const usageCount = result.rows[0] ? result.rows[0].usage_count : 0;
+
+    if (usageCount >= API_CALLS_LIMIT) {
+      const responseMessage = `Usage limit reached for shop: ${shop_id}`;
       console.log(responseMessage);
       return { statusCode: 200, body: responseMessage };
     }
 
-    await client.query(
-      'INSERT INTO users (name, password, search_phrase, shop_id) VALUES ($1, $2, $3, $4)',
-      [name, password, search_phrase, shop_id]
-    );
+    const message = {
+      name,
+      password,
+      search_phrase,
+      shop_id,
+    };
 
-    await client.query(
-      `INSERT INTO shop_usage (shop_id, usage_count) 
-         VALUES ($1, 1) 
-         ON CONFLICT (shop_id) DO 
-         UPDATE SET usage_count = shop_usage.usage_count + 1`,
-      [shop_id]
-    );
-    console.log('successfully inserted data into DB: name-' + name);
-
-    console.log('Messages processed successfully');
-    return { statusCode: 200, body: 'Messages processed successfully' };
+    await sqs.sendMessage({
+      MessageBody: JSON.stringify(message),
+      QueueUrl: queueUrl,
+    });
+    return { statusCode: 200, body: 'Request is being processed successfully' };
   } catch (error) {
-    console.error('Error processing messages', error);
-    return { statusCode: 500, body: 'Internal server error' };
+    console.log('Error processing request', error);
+    return { statusCode: 500, body: 'Internal server error - Error processing request' };
   } finally {
     await client.end();
   }
@@ -74,9 +59,3 @@ const createDbClient = () => {
   });
 };
 
-const provideDbConnectionAndSetup = async (client: Client) => {
-  await client.connect();
-  console.log('Client connected successfully');
-  await client.query(setupScript);
-  console.log('Database setup completed');
-};

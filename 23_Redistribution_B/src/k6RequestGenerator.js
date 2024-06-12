@@ -3,7 +3,7 @@ import { check, sleep } from 'k6';
 import { randomItem, randomString } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
 
 export let options = {
-  vus: 1000, 
+  vus: 40, 
   duration: '5s', 
 };
 

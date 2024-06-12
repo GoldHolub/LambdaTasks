@@ -6,12 +6,12 @@ const clientId = process.env.CLIENT_ID!;
 
 export const sighIn: APIGatewayProxyHandler = async (event) => {
     try {
-        const { email: username, password, mfaCode } = JSON.parse(event.body!);
+        const { username, password, mfaCode } = JSON.parse(event.body!);
 
         if (!username || !password) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ message: 'Email and password are required' }),
+                body: JSON.stringify({ message: 'Username and password are required' }),
             };
         }
 

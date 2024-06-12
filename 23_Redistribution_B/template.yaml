@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 
 Globals:
   Function:
-    Timeout: 30
+    Timeout: 8
 
 Resources:
   SQSMessagesHandler:
@@ -38,4 +38,21 @@ Resources:
         Target: es2022
         Sourcemap: false
         EntryPoints:
-        - DbInfoChecker.ts             
+        - DbInfoChecker.ts     
+
+  SQSMessagesProcessor:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: src
+      Handler: SQSMessagesProcessor.processSQSMessage
+      Runtime: nodejs20.x
+      Architectures:
+      - x86_64
+    Metadata: 
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+        - SQSMessagesProcessor.ts                  
